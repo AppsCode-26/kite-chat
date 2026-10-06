@@ -63,7 +63,8 @@ export function createBackend(config, { onError = () => {} } = {}) {
     return u ? { uid: u.uid, email: u.email || "", name: u.displayName || (u.email || "").split("@")[0] } : null;
   };
   const emitUser = () => authListeners.forEach((cb) => cb(currentUser()));
-  onAuthStateChanged(auth, emitUser);
+  let authReady = false;
+  onAuthStateChanged(auth, () => { authReady = true; emitUser(); });
 
   const uid = () => auth.currentUser.uid;
   const userRef = () => doc(db, "users", uid());
@@ -78,6 +79,7 @@ export function createBackend(config, { onError = () => {} } = {}) {
 
     onAuth(cb) {
       authListeners.add(cb);
+      if (authReady) cb(currentUser());
       return () => authListeners.delete(cb);
     },
 

@@ -1,7 +1,7 @@
 import { marked } from "https://cdn.jsdelivr.net/npm/marked@12.0.2/lib/marked.esm.js";
 import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.es.mjs";
 import hljs from "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/es/highlight.min.js";
-import { APP_NAME, firebaseConfig } from "./config.js";
+import { APP_NAME, FIREBASE_KEY_FILE, SETUP_LINKS, firebaseConfig } from "./config.js";
 import { dayKey } from "./util.js";
 import {
   DEFAULT_MODEL, FALLBACK_MODELS, GeminiError, buildSteps, describeModel, featuredModels,
@@ -1272,15 +1272,31 @@ function wireApp() {
 let lastSyncToast = 0;
 function onBackendError(err) {
   console.error(err);
-  if (Date.now() - lastSyncToast < 8000) return;
+  if (!state.user || Date.now() - lastSyncToast < 8000) return;
   lastSyncToast = Date.now();
   toast(err?.code === "permission-denied" ? "The cloud refused that request. Try signing out and back in." : "Couldn't sync with the cloud. Changes will retry when you're back online.");
+}
+
+// The Firebase config with its web API key filled in, or null if the key isn't available yet.
+async function loadFirebaseConfig() {
+  if (!firebaseConfig) return null;
+  if (firebaseConfig.apiKey) return firebaseConfig;
+  try {
+    const res = await fetch(FIREBASE_KEY_FILE, { cache: "no-store" });
+    if (!res.ok) return null;
+    const text = await res.text();
+    const match = text.match(/apiKey["']?\s*[:=]\s*["']([^"']+)["']/) || text.match(/([A-Za-z0-9_-]{30,})/);
+    return match ? { ...firebaseConfig, apiKey: match[1] } : null;
+  } catch {
+    return null;
+  }
 }
 
 async function pickBackend() {
   const local = ["localhost", "127.0.0.1"].includes(location.hostname) && new URLSearchParams(location.search).has("local");
   if (local) return (await import("./backend-local.js")).createBackend();
-  if (firebaseConfig) return (await import("./backend-firebase.js")).createBackend(firebaseConfig, { onError: onBackendError });
+  const config = await loadFirebaseConfig();
+  if (config) return (await import("./backend-firebase.js")).createBackend(config, { onError: onBackendError });
   return null;
 }
 
@@ -1290,6 +1306,8 @@ backend = await pickBackend();
 if (!backend) {
   $("boot").hidden = true;
   $("setup").hidden = false;
+  $("setupFirebase").href = SETUP_LINKS.firebase;
+  $("setupGithub").href = SETUP_LINKS.github;
 } else {
   wireAuth();
   wireApp();

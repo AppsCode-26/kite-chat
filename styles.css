@@ -159,6 +159,10 @@ select.input { appearance: none; padding-right: 40px; background-image: linear-g
 .input-row input { padding-right: 72px; }
 .input-row .link-btn { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); }
 .form-error { color: var(--danger); font-size: 14.5px; }
+.setup-steps { margin: 0; padding-left: 1.3em; color: var(--text-2); display: flex; flex-direction: column; gap: 6px; }
+.setup-steps strong { color: var(--text); font-weight: 500; }
+a.btn { text-decoration: none; color: var(--text); }
+a.btn.primary { color: var(--on-primary); }
 .auth-switch { color: var(--text-2); font-size: 14.5px; }
 .auth-note { color: var(--text-3); font-size: 12.5px; line-height: 1.5; margin-top: 8px; }
 

@@ -86,12 +86,19 @@
   </div>
 </main>
 
-<!-- Shown until the cloud project is connected in config.js -->
+<!-- Shown until the Firebase web key file has been added to the site -->
 <main id="setup" class="auth" hidden>
   <div class="auth-card">
     <img class="auth-logo" src="icon.svg" alt="" width="60" height="60">
-    <h1>Almost ready</h1>
-    <p class="auth-sub">Accounts and chat sync aren't connected yet. Add the Firebase project details to <code>config.js</code> to finish setup.</p>
+    <h1>One step left</h1>
+    <p class="auth-sub">Sign-in is switched off until this site has its Firebase web key. If this is your site:</p>
+    <ol class="setup-steps">
+      <li>Open the Firebase project settings, scroll to <strong>Your apps</strong>, and copy the config snippet.</li>
+      <li>Open the new file on GitHub, paste, and choose <strong>Commit changes</strong>.</li>
+      <li>Reload this page after about a minute.</li>
+    </ol>
+    <a id="setupFirebase" class="btn wide" target="_blank" rel="noopener">1. Open Firebase settings</a>
+    <a id="setupGithub" class="btn primary wide" target="_blank" rel="noopener">2. Add the file on GitHub</a>
   </div>
 </main>
 

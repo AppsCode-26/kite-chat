@@ -18,6 +18,7 @@ Unofficial: not affiliated with or endorsed by Google.
 | `backend-firebase.js` | Accounts and cloud storage |
 | `backend-local.js` | Local-only stand-in for development (`http://localhost:…/?local=1`) |
 | `config.js` | App name and the Firebase project config |
+| `firebase-web-key.txt` | The Firebase project's web API key (a public identifier, not a secret). The site shows a setup screen until this file exists |
 | `firestore.rules` | Security rules: each account can only touch its own data |
 
 ## Running locally
