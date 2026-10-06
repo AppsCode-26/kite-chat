@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<title>Kite</title>
+<meta name="description" content="A personal chat client for the Gemini API. Unofficial — not affiliated with Google.">
+<meta name="theme-color" content="#050506">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kite">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<script>
+  // Apply the saved theme before first paint.
+  try {
+    var t = localStorage.getItem("kite.theme") || "dark";
+    if (t === "system") t = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+    document.documentElement.dataset.theme = t;
+  } catch (e) {}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<svg hidden xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M5 9h14M5 15h14"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-compose" viewBox="0 0 24 24"><path d="M20 12.5a8 8 0 1 1-8.5-8"/><path d="M19.3 3.2a1.6 1.6 0 0 1 2.3 2.3l-8 8-3 .8.8-3z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></symbol>
+  <symbol id="i-temp" viewBox="0 0 24 24"><path d="M12 4a8 8 0 0 1 8 8 8 8 0 0 1-8 8H5l1.6-2.6A8 8 0 0 1 12 4z" stroke-dasharray="2.2 2.8"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
+  <symbol id="i-stop" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="2" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M15 9V6.5A2.5 2.5 0 0 0 12.5 4h-6A2.5 2.5 0 0 0 4 6.5v6A2.5 2.5 0 0 0 6.5 15H9"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.3-4.3L4 8.5M4 4v4.5h4.5M4 13a8 8 0 0 0 14.3 4.3L20 15.5M20 20v-4.5h-4.5"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="18.5" cy="12" r="1.4" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M9 4h6l-1 6 3.5 3.5v1.5h-11V13.5L10 10zM12 15v5.5"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 7h15M10 4h4M6.5 7l.8 11a2 2 0 0 0 2 1.9h5.4a2 2 0 0 0 2-1.9l.8-11M10 11v5M14 11v5"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19.5 8.5a2 2 0 0 0-4-4L4 16z"/></symbol>
+  <symbol id="i-logout" viewBox="0 0 24 24"><path d="M14 4h3.5A2.5 2.5 0 0 1 20 6.5v11a2.5 2.5 0 0 1-2.5 2.5H14M10 8l-4 4 4 4M6 12h9"/></symbol>
+</svg>
+
+<div id="boot" class="boot" role="status">
+  <span class="spinner" aria-hidden="true"></span>
+  <span class="sr-only">Loading</span>
+</div>
+
+<!-- Sign in / create account -->
+<main id="auth" class="auth" hidden>
+  <div class="auth-card">
+    <img class="auth-logo" src="icon.svg" alt="" width="60" height="60">
+    <h1 id="authTitle">Sign in to Kite</h1>
+    <p id="authSub" class="auth-sub">Your chats and settings sync to your account on every device.</p>
+    <form id="authForm" novalidate>
+      <label class="field" id="nameField" hidden>
+        <span>Name</span>
+        <input id="authName" type="text" autocomplete="name" maxlength="60">
+      </label>
+      <label class="field">
+        <span>Email</span>
+        <input id="authEmail" type="email" autocomplete="email" inputmode="email" required>
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <span class="input-row">
+          <input id="authPassword" type="password" autocomplete="current-password" minlength="6" required>
+          <button type="button" id="pwToggle" class="link-btn">Show</button>
+        </span>
+      </label>
+      <p id="authError" class="form-error" role="alert" hidden></p>
+      <button id="authSubmit" class="btn primary wide" type="submit">Sign in</button>
+    </form>
+    <button type="button" id="forgotBtn" class="link-btn">Forgot password?</button>
+    <p class="auth-switch"><span id="switchText">New here?</span> <button type="button" id="switchMode" class="link-btn">Create an account</button></p>
+    <p class="auth-note"><span data-app-name>Kite</span> is an unofficial client for the Gemini API and isn't affiliated with Google. This account is only for this site — don't reuse your Google password.</p>
+  </div>
+</main>
+
+<!-- Shown until the cloud project is connected in config.js -->
+<main id="setup" class="auth" hidden>
+  <div class="auth-card">
+    <img class="auth-logo" src="icon.svg" alt="" width="60" height="60">
+    <h1>Almost ready</h1>
+    <p class="auth-sub">Accounts and chat sync aren't connected yet. Add the Firebase project details to <code>config.js</code> to finish setup.</p>
+  </div>
+</main>
+
+<div id="app" class="app" hidden>
+  <aside id="sidebar" class="sidebar" aria-label="Chats">
+    <div class="sb-head">
+      <span class="brand" data-app-name>Kite</span>
+      <button id="sbClose" class="icon-btn round" aria-label="Close menu"><svg class="i" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </div>
+    <nav class="sb-nav">
+      <button id="newChat" class="sb-item primary"><svg class="i" aria-hidden="true"><use href="#i-compose"/></svg><span>New chat</span></button>
+      <button id="searchBtn" class="sb-item"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg><span>Search chats</span></button>
+      <div id="searchBox" class="sb-item search-box" hidden>
+        <svg class="i" aria-hidden="true"><use href="#i-search"/></svg>
+        <input id="searchInput" type="search" placeholder="Search chats" aria-label="Search chats" autocomplete="off">
+        <button id="searchClose" class="icon-btn sm" aria-label="Close search"><svg class="i" aria-hidden="true"><use href="#i-close"/></svg></button>
+      </div>
+    </nav>
+    <div id="chatList" class="sb-scroll"></div>
+    <div class="sb-foot">
+      <button id="accountBtn" class="account">
+        <span id="accountAvatar" class="avatar ring" aria-hidden="true"></span>
+        <span id="accountName" class="account-name"></span>
+      </button>
+      <button id="settingsBtn" class="icon-btn" aria-label="Settings"><svg class="i" aria-hidden="true"><use href="#i-settings"/></svg></button>
+    </div>
+  </aside>
+  <div id="scrim" class="scrim"></div>
+
+  <main class="main" id="main">
+    <header class="topbar">
+      <button id="menuBtn" class="icon-btn round" aria-label="Open menu"><svg class="i" aria-hidden="true"><use href="#i-menu"/></svg></button>
+      <button id="modelBtn" class="model-btn" aria-haspopup="menu" aria-expanded="false">
+        <span class="mb-brand">Gemini</span>
+        <span id="modelLabel" class="mb-model"></span>
+        <svg class="i sm" aria-hidden="true"><use href="#i-chevron"/></svg>
+      </button>
+      <span class="spacer"></span>
+      <button id="tempBtn" class="icon-btn round" aria-label="Start a temporary chat" title="Temporary chat"><svg class="i" aria-hidden="true"><use href="#i-temp"/></svg></button>
+      <button id="tempClose" class="icon-btn round" aria-label="Leave temporary chat" hidden><svg class="i" aria-hidden="true"><use href="#i-close"/></svg></button>
+      <button id="avatarBtn" class="avatar-btn" aria-label="Account" aria-haspopup="menu"><span id="topAvatar" class="avatar" aria-hidden="true"></span></button>
+    </header>
+
+    <div id="scroll" class="scroll">
+      <div id="empty" class="empty"></div>
+      <div id="thread" class="thread" aria-live="polite"></div>
+    </div>
+
+    <footer class="composer-wrap">
+      <div id="attachRow" class="attach-row" hidden></div>
+      <form id="composer" class="composer">
+        <button type="button" id="attachBtn" class="icon-btn" aria-label="Add images"><svg class="i lg" aria-hidden="true"><use href="#i-plus"/></svg></button>
+        <textarea id="input" rows="1" placeholder="Ask Gemini" aria-label="Message" enterkeyhint="send"></textarea>
+        <button type="button" id="micBtn" class="icon-btn" aria-label="Dictate" aria-pressed="false"><svg class="i" aria-hidden="true"><use href="#i-mic"/></svg></button>
+        <button type="submit" id="sendBtn" class="send-btn" aria-label="Send" disabled><svg class="i" aria-hidden="true"><use id="sendIcon" href="#i-send"/></svg></button>
+      </form>
+      <input id="fileInput" type="file" accept="image/*" multiple hidden>
+    </footer>
+  </main>
+</div>
+
+<div id="settings" class="sheet" hidden>
+  <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <header class="sheet-head">
+      <h2 id="settingsTitle">Settings</h2>
+      <button id="settingsClose" class="icon-btn round" aria-label="Close settings"><svg class="i" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <div id="settingsBody" class="sheet-body"></div>
+  </div>
+</div>
+
+<dialog id="dialog" class="dialog">
+  <form id="dialogForm" method="dialog">
+    <h2 id="dialogTitle"></h2>
+    <p id="dialogBody"></p>
+    <input id="dialogInput" type="text" maxlength="120" hidden>
+    <div class="dialog-actions">
+      <button type="button" id="dialogCancel" class="btn">Cancel</button>
+      <button type="submit" id="dialogOk" class="btn primary" value="ok">OK</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="toast" class="toast" role="status" hidden></div>
+
+<script type="module" src="app.js" onerror="document.getElementById('boot').textContent='Couldn\u2019t load the app. Check your connection and reload.'"></script>
+<noscript><p style="padding:24px;color:#eee;font-family:system-ui">Kite needs JavaScript to run.</p></noscript>
+</body>
+</html>
